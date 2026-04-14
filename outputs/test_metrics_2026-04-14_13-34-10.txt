@@ -1,0 +1,6 @@
+Test accuracy: 0.6000
+Test f1-score: 0.7143
+Test precision: 0.5556
+Test recall: 1.0000
+Test AROC: 0.4400
+Test loss: 1.6024
