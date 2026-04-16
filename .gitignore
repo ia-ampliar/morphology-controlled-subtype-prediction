@@ -1,0 +1,8 @@
+__pycache__/
+callbacks/
+checkpoints/
+docs/
+submol-env/
+src/architectures/
+src/models/__pycache__/
+src/utils/__pycache__/
