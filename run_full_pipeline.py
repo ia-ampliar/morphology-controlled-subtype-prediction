@@ -16,26 +16,10 @@ Requirimentos:
     - scikit-learn=1.2.2
 """
 
-import os
 import argparse
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import platform
-from datetime import datetime
-from typing import Tuple, List, Dict
+from typing import Tuple, Dict
 
-import tensorflow as tf
-from tensorflow import keras
-import tensorflow.keras.backend as K
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras import layers
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense, Dropout, BatchNormalization
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications import MobileNetV2, NASNetMobile, ResNet50V2, VGG19, InceptionV3, DenseNet201
-from sklearn.metrics import confusion_matrix
 
 import logging
 

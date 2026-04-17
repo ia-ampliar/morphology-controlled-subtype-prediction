@@ -1,6 +1,0 @@
-Test accuracy: 0.6000
-Test F1-Score: 0.3333
-Test Precision: 1.0000
-Test Recall: 0.2000
-Test AUC: 0.5700
-Test Loss: 1.4640

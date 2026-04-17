@@ -3,6 +3,7 @@ callbacks/
 checkpoints/
 docs/
 submol-env/
+molsub-venv/
 src/architectures/
 src/models/__pycache__/
 src/utils/__pycache__/

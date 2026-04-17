@@ -2,6 +2,27 @@
 
 Repositório contendo notebooks Jupyter e scripts Python para aplicações de deep learning em histopatologia, com foco em **câncer gástrico**. O projeto implementa múltiplas arquiteturas de redes neurais convolucionais (CNN) modernas pré-treinadas para classificação de subtipos moleculares.
 
+## Indice
+- [Visão Geral do Projeto](#📋-Visão-Geral-do-Projeto)
+- [Arquiteturas Suportadas](#🧠-Arquiteturas-Suportadas)
+- [Ambiente & Dependências](#🛠️-Ambiente-&-Dependências)
+- [Instalação Rápida](#📦-Instalação-Rápida)
+- [Como Usar](#🚀-Como-Usar)
+- [Estrutura do Projeto](#📁-Estrutura-do-Projeto)
+- [Configuração do Pipeline](#⚙️-Configuração-do-Pipeline)
+- [Saídas & Resultados](#📊-Saídas-&-Resultados)
+- [Fluxo de Treinamento](#🔄-Fluxo-de-Treinamento)
+- [Material Suplementar](#📚-Material-Suplementar)
+    - [Troubleshooting](#🐛-Troubleshooting)
+    - [Módulos Principais](#📊-Módulos-Principais)
+    - [Estrutura do Projeto](#📁-Estrutura-do-Projeto)
+    - [Fluxo de Treinamento](#🔄-Fluxo-de-Treinamento)
+- [Resultados Esperados](#📈-Resultados-Esperados)
+- [Contribuições](#🤝-Contribuições)
+- [Referências & Docs](#📚-Referências-&-Docs)
+- [Licença](#📝-Licença)
+
+
 ## 📋 Visão Geral do Projeto
 
 **Predição de Subtipos Moleculares de Câncer Gástrico**:
@@ -75,10 +96,8 @@ source venv/bin/activate
 pip install --upgrade pip
 
 # Instalar requisitos
-pip install -r requirements.txt
+pip install -r requirements.txt --extra-index-url https://pypi.nvidia.com
 
-# (Opcional) Para suporte a GPU com CUDA
-pip install tensorflow[and-cuda]==2.15.0.post1
 ```
 
 ### 3. Preparar Dataset
@@ -86,7 +105,7 @@ pip install tensorflow[and-cuda]==2.15.0.post1
 Estruture seus dados nos diretórios esperados:
 
 ```
-sanity_test_dataset/
+molecular_subtype_dataset/
 ├── train/
 │   ├── class_1/
 │   │   ├── image_1.jpg
@@ -177,7 +196,7 @@ config = {
     'base_path': 'sanity_test_dataset/',
     'img_shape': (224, 224, 3),
     'batch_size': 32,
-    'epochs': 50,
+    'epochs': 100,
     'base_learning_rate': 0.0001,
     'patience': 7,
     'min_delta': 0.001,
@@ -204,143 +223,17 @@ history_phase2 = train_phase2('MobileNetV2', model, basemodel, train_data, val_d
 metrics = evaluate_model(model, test_data, class_names, architecture_name='MobileNetV2')
 ```
 
-## 📁 Estrutura do Projeto
-
-```
-molecular_subtype_notebooks/
-├── README.md                      # Este arquivo
-├── requirements.txt               # Dependências Python
-├── run_full_pipeline.py          # Script CLI principal ⭐
-│
-├── notebooks/                     # Jupyter Notebooks por arquitetura
-│   ├── MobileNetV2.ipynb
-│   ├── DenseNet201.ipynb
-│   ├── InceptionV3.ipynb
-│   ├── ResNet50V2.ipynb
-│   ├── VGG19.ipynb
-│   └── NASNetMobile.ipynb
-│
-├── src/                           # Código modularizado
-│   ├── models/                    # Lógica de modelos
-│   │   ├── build_model.py         # Construção de modelos
-│   │   ├── dataset.py             # Carregamento de dados
-│   │   ├── train_model.py         # Treinamento (2 fases)
-│   │   ├── inference.py           # Avaliação/Inferência
-│   │   └── metrics.py             # Cálculo de métricas
-│   │
-│   └── utils/                     # Utilitários
-│       └── utils.py               # Funções auxiliares
-│
-├── sanity_test_dataset/           # Dataset de teste/sanidade
-│   ├── train/
-│   ├── val/
-│   └── test/
-│
-└── outputs/                       # Resultados gerados
-    ├── checkpoints/               # (gitignored) Modelos salvos
-    ├── metrics/                   # Logs de métricas
-    └── plots/                     # Gráficos e visualizações
-```
-
-## 📊 Módulos Principais
-
-### `run_full_pipeline.py` - Entrypoint Principal
-
-Script CLI que orquestra todo o pipeline de treinamento e avaliação.
-
-```python
-python run_full_pipeline.py --arch MobileNetV2 --base_path ./dados/
-```
-
-**Fluxo**:
-1. Carrega configurações
-2. Imprime informações do ambiente
-3. Carrega datasets (train/val/test)
-4. Constrói modelo
-5. Treina Fase 1 (base congelada)
-6. Treina Fase 2 (camadas descongeladas)
-7. Avalia no conjunto de teste
-8. Salva métricas
-
-### `src/models/build_model.py` - Construção de Modelos
-
-Define como cada arquitetura é carregada e modificada:
-
-- `get_preprocessing_function(arch)` - Retorna função de pré-processamento específica
-- `get_base_model(arch, img_shape, input_tensor)` - Carrega modelo base pré-treinado
-- `get_dense_layers(num_classes, basemodel, arch)` - Adiciona camadas customizadas
-- `build_model(img_shape, num_classes, arch)` - Constrói modelo completo
-
-### `src/models/dataset.py` - Carregamento de Dados
-
-Gerencia o carregamento dos datasets:
-
-- `setup_data_directories(config, base_path)` - Prepara caminhos
-- `load_dataset(datagen, directory, batch_size)` - Carrega um dataset
-- `load_all_datasets(train_dir, val_dir, test_dir, batch_size)` - Carrega todos os 3 datasets
-
-**Augmentação**: Usa `ImageDataGenerator` do Keras (redimensionamento, normalização).
-
-### `src/models/train_model.py` - Treinamento
-
-Implementa treinamento em 2 fases:
-
-- `train_phase1(model, basemodel, train_data, val_data, config, arch)` - Fase 1: Base congelada
-- `train_phase2(arch, model, basemodel, train_data, val_data, config, history_phase1)` - Fase 2: Descongelamento progressivo
-
-**Estratégia**:
-- **Fase 1** (~40% das épocas): Treina apenas as camadas top (base congelada)
-- **Fase 2** (~60% das épocas): Descongela ~30% das camadas base e continua treinamento
-
-### `src/models/inference.py` - Avaliação e Inferência
-
-Avalia o modelo treinado:
-
-- `evaluate_model(model, test_data, class_names, arch)` - Calcula métricas no conjunto de teste
-- Retorna: acurácia, precision, recall, F1, matriz de confusão
-
-### `src/utils/utils.py` - Utilitários
-
-Funções auxiliares:
-
-- `get_class_info(dataset)` - Extrai nomes e número de classes
-- `print_environment_info()` - Mostra versões de Python, TF, CUDA, etc
-- `save_metrics_to_file(metrics, arch)` - Salva resultados em arquivo
-
-## ⚙️ Configuração do Pipeline
-
-As configurações padrão estão em `run_full_pipeline.py`:
-
-```python
-{
-    'base_path': 'sanity_test_dataset/',
-    'img_shape': (224, 224, 3),
-    'batch_size': 32,
-    'epochs': 5,
-    'base_learning_rate': 0.0001,
-    'patience': 7,  # Early stopping
-    'min_delta': 0.001,  # Delta mínimo de melhora
-    'phase1_ratio': 0.4,  # 40% das épocas em Fase 1
-    'unfreeze_ratio': 0.3,  # Descongelar 30% das camadas em Fase 2
-}
-```
-
-Para customizar, edite `load_config()` em `run_full_pipeline.py`.
-
 ## 📊 Saídas & Resultados
 
 O pipeline gera os seguintes outputs em `outputs/`:
 
 ```
 outputs/
-├── metrics/
-│   └── {architecture}_metrics.txt     # Métricas finais (acc, prec, recall, F1)
-├── plots/
-│   ├── {architecture}_confusion_matrix.png
-│   ├── {architecture}_training_history.png
-│   └── {architecture}_roc_curve.png
-└── logs/
-    └── {architecture}_training.log    # Log detalhado do treinamento
+├── {architecture}_metrics.txt     # Métricas finais (acc, prec, recall, F1)
+├── {architecture}_confusion_matrix.png
+├── {architecture}_training_history.png
+└── {architecture}_roc_curve.png
+
 ```
 
 **Exemplo de saída**:
@@ -351,110 +244,17 @@ Accuracy: 0.8523
 Precision: 0.8641
 Recall: 0.8412
 F1-Score: 0.8525
+AUC-ROC: 0.9154
 ```
 
-## 🔄 Fluxo de Treinamento
 
-```
-1. Setup & Carregamento
-   ↓
-2. Construção do Modelo
-   ├─ Carregar base pré-treinada
-   ├─ Congelar camadas base
-   └─ Adicionar camadas densas customizadas
-   ↓
-3. Fase 1 de Treinamento (40% de épocas)
-   ├─ Base congelada
-   ├─ Treina apenas top layers
-   ├─ Early stopping (patience=7)
-   └─ Valida em cada época
-   ↓
-4. Fase 2 de Treinamento (60% de épocas)
-   ├─ Descongela ~30% das camadas base
-   ├─ Treina com learning rate reduzida
-   ├─ Early stopping
-   └─ Valida em cada época
-   ↓
-5. Avaliação Final
-   ├─ Teste no conjunto de teste
-   ├─ Calcula métricas (acc, p, r, f1)
-   ├─ Gera matriz de confusão
-   └─ Salva resultados
-```
 
-## 🐛 Troubleshooting
+## 📚 Material Suplementar
 
-### Erro: `ModuleNotFoundError: No module named 'tensorflow'`
-
-**Solução**:
-```bash
-pip install tensorflow[and-cuda]==2.15.0.post1
-```
-
-### Erro: `FileNotFoundError: [Errno 2] No such file or directory: 'sanity_test_dataset/train'`
-
-**Solução**: Verifique se o dataset está estruturado corretamente:
-```bash
-# Verificar estrutura
-ls -la sanity_test_dataset/
-ls -la sanity_test_dataset/train/
-```
-
-Ou use um caminho customizado:
-```bash
-python run_full_pipeline.py --base_path ./seu_dataset/
-```
-
-### Erro: `CUDA out of memory`
-
-**Soluções**:
-1. Reduzir `batch_size` (padrão: 32 → tente 16)
-2. Editar configuração em `run_full_pipeline.py`:
-   ```python
-   config['batch_size'] = 16
-   ```
-3. Usar CPU (desativar CUDA):
-   ```bash
-   CUDA_VISIBLE_DEVICES=-1 python run_full_pipeline.py
-   ```
-
-### Notebooks não encontram módulos de `src/`
-
-**Solução**: Execute o notebook a partir da pasta raiz do projeto:
-```bash
-# Errado
-cd notebooks/
-jupyter notebook
-
-# Correto
-cd ..  # Volta para molecular_subtype_notebooks/
-jupyter notebook notebooks/MobileNetV2.ipynb
-```
-
-### Lentidão sem GPU
-
-**Verificar se TensorFlow detecta GPU**:
-```bash
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-```
-
-**Se não detectar**:
-- Instale CUDA 11.x ou 12.x
-- Reinstale TensorFlow com suporte a GPU:
-  ```bash
-  pip install --upgrade tensorflow[and-cuda]
-  ```
-
-### Early stopping não funciona
-
-Verifique parâmetros em `run_full_pipeline.py`:
-```python
-config = {
-    ...
-    'patience': 7,  # Número de épocas sem melhora
-    'min_delta': 0.001,  # Delta mínimo
-}
-```
+- ### 🐛 Troubleshooting
+- ### 📊 Módulos Principais 
+- ## 📁 Estrutura do Projeto
+- ## 🔄 Fluxo de Treinamento
 
 ## 📈 Resultados Esperados
 
@@ -486,7 +286,6 @@ Para adicionar novas arquiteturas:
 
 - [TensorFlow Documentation](https://www.tensorflow.org/guide)
 - [Keras Applications](https://keras.io/api/applications/)
-- [MobileNetV2 Paper](https://arxiv.org/abs/1801.04381)
 - [Transfer Learning Guide](https://www.tensorflow.org/guide/transfer_learning)
 
 ## 📝 Licença
