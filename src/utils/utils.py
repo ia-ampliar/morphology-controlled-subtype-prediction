@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Tuple, List, Dict
 import os
@@ -58,16 +59,11 @@ def save_metrics_to_file(metrics: Dict, output_path: str = None, architecture_na
         output_path (str): Caminho de saída (default: with timestamp)
     """
     if output_path is None:
-        output_path = f'outputs/{architecture_name}_test_metrics_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.txt'
+        output_path = f'outputs/metrics/{architecture_name}_test_metrics_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.json'
     
     os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
     
     with open(output_path, 'w') as f:
-        f.write(f"Test accuracy: {metrics['accuracy']:.4f}\n")
-        f.write(f"Test F1-Score: {metrics['f1_score']:.4f}\n")
-        f.write(f"Test Precision: {metrics['precision']:.4f}\n")
-        f.write(f"Test Recall: {metrics['recall']:.4f}\n")
-        f.write(f"Test AUC: {metrics['auc']:.4f}\n")
-        f.write(f"Test Loss: {metrics['loss']:.4f}\n")
+        json.dump(metrics, f)
     
     logger.info(f"Métricas salvas em: {output_path}")

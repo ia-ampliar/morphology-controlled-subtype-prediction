@@ -147,6 +147,23 @@ def evaluate_model(model: Model, test_data, class_names: List[str], architecture
     Y_pred = model.predict(test_data, steps=num_test, verbose=1)
     test_preds = np.argmax(Y_pred, axis=-1)
     test_trues = test_data.classes
+
+    # changes true and predicted labels from 0 and 1 to class names
+    test_trues_names = [class_names[i] for i in test_trues]
+    test_preds_names = [class_names[i] for i in test_preds]
+
+    # cria um data frame com o endereço das imagens, as classes verdadeiras e as predições
+    test_filenames = test_data.filenames
+    test_df = pd.DataFrame({
+        'filename': test_filenames,
+        'true_label': test_trues_names,
+        'predicted_label': test_preds_names
+    })
+
+    # save test_df to csv
+    output_csv_path = f'outputs/dataframes/{architecture_name}_test_predictions_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
+    os.makedirs(os.path.dirname(output_csv_path) or '.', exist_ok=True)
+    test_df.to_csv(output_csv_path, index=False)
     
     # Matriz de confusão
     cm = confusion_matrix(test_trues, test_preds)

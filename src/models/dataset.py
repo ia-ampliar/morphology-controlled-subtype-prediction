@@ -8,21 +8,20 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-def setup_data_directories(config: Dict, base_path: str) -> Tuple[str, str, str]:
+def setup_data_directories(config: Dict) -> Tuple[str, str, str]:
     """
     Prepara caminhos dos diretórios de dados.
     
     Args:
         config (dict): Configuração com base_path
-        base_path (str): Caminho base para os datasets
         
     Returns:
         Tuple[str, str, str]: Caminhos (train_dir, val_dir, test_dir)
     """
     
-    train_dir = os.path.join(base_path, 'train')
-    val_dir = os.path.join(base_path, 'val')
-    test_dir = os.path.join(base_path, 'test')
+    train_dir = os.path.join(config['base_path'], 'train')
+    val_dir = os.path.join(config['base_path'], 'val')
+    test_dir = os.path.join(config['base_path'], 'test')
     
     for directory in [train_dir, val_dir, test_dir]:
         if not os.path.exists(directory):

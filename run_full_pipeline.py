@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 
 
-def load_config() -> Dict:
+def load_config(base_path: str, epochs: int, base_learning_rate: float) -> Dict:
     """
     Carrega configurações do modelo e treinamento.
     
@@ -52,11 +52,11 @@ def load_config() -> Dict:
             - base_learning_rate: Taxa de aprendizado inicial
     """
     config = {
-        'base_path': 'sanity_test_dataset/',
+        'base_path': base_path,
         'img_shape': (224, 224, 3),
         'batch_size': 32,
-        'epochs': 5,
-        'base_learning_rate': 0.0001,
+        'epochs': epochs,
+        'base_learning_rate': base_learning_rate,
         'patience': 7,
         'min_delta': 0.001,
         'phase1_ratio': 0.4,  # 40% das épocas na fase 1
@@ -70,7 +70,7 @@ def load_config() -> Dict:
 # PIPELINE COMPLETO
 # ============================================================================
 
-def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "sanity_test_dataset/") -> Tuple[Model, Dict]:
+def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "sanity_test_dataset/", epochs: int = 5, base_learning_rate: float = 0.0001) -> Tuple[Model, Dict]:
     """
     Executa pipeline completo: carregamento, construção, treinamento e avaliação.
     """
@@ -80,10 +80,10 @@ def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "
     
     # Setup
     print_environment_info()
-    config = load_config()
+    config = load_config(base_path, epochs, base_learning_rate)
     
     # Dados
-    train_dir, val_dir, test_dir = setup_data_directories(config, base_path)
+    train_dir, val_dir, test_dir = setup_data_directories(config)
     train_data, val_data, test_data = load_all_datasets(
         train_dir, val_dir, test_dir, config['batch_size']
     )
@@ -130,9 +130,10 @@ def main(kwargs = None, architecture_name: str = "MobileNetV2"):
     parser.add_argument('--arch', type=str, default='MobileNetV2', help='Arquitetura a ser utilizada (MobileNetV2, ResNet50V2, VGG19, NASNetMobile, InceptionV3, DenseNet201)')
     parser.add_argument('--base_path', type=str, default='sanity_test_dataset/', help='Caminho base para os datasets (train, val, test)')
     
-    # parser.add_argument('--epochs', type=int, default=10, help='Número máximo de épocas para treinamento')
+    parser.add_argument('--epochs', type=int, default=5, help='Número máximo de épocas para treinamento')
+    parser.add_argument('--base_lr', type=float, default=0.0001, help='Taxa de aprendizado inicial')
+
     # parser.add_argument('--batch_size', type=int, default=32, help='Tamanho do batch para treinamento')
-    # parser.add_argument('--base_lr', type=float, default=0.0001, help='Taxa de aprendizado inicial')
     # parser.add_argument('--phase1_ratio', type=float, default=0.4, help='Proporção de épocas para fase 1 (fine tuning com base congelada)')
     # parser.add_argument('--unfreeze_ratio', type=float, default=0.3, help='Proporção de camadas a descongelar na fase 2 (fine tuning com top layers descongeladas)')
     # parser.add_argument('--patience', type=int, default=7, help='Número de épocas sem melhora para early stopping')
@@ -142,7 +143,9 @@ def main(kwargs = None, architecture_name: str = "MobileNetV2"):
 
     run_full_pipeline(
         architecture_name=args.arch,
-        base_path=args.base_path
+        base_path=args.base_path,
+        epochs=args.epochs,
+        base_learning_rate=args.base_lr
     )
 
 if __name__ == "__main__":

@@ -73,7 +73,9 @@ jupyter>=1.0.0
 
 ## 📦 Instalação Rápida
 
-### 1. Preparar Ambiente Virtual
+### Opção 1: Usando Virtualenv (Python)
+
+#### 1. Preparar Ambiente Virtual
 
 ```bash
 # Clonar/navegar para o repositório
@@ -89,7 +91,7 @@ source venv/bin/activate
 # venv\Scripts\activate
 ```
 
-### 2. Instalar Dependências
+#### 2. Instalar Dependências
 
 ```bash
 # Upgrade pip
@@ -98,6 +100,26 @@ pip install --upgrade pip
 # Instalar requisitos
 pip install -r requirements.txt --extra-index-url https://pypi.nvidia.com
 
+```
+
+### Opção 2: Usando Conda
+
+#### 1. Criar Ambiente Conda
+
+```bash
+# Criar ambiente conda
+conda env create -f environment.yml
+
+# Ativar ambiente
+conda activate molsub-env
+```
+
+#### 2. Instalar Dependências (se necessário)
+
+Caso haja dependências que não foram instaladas via `environment.yml`, instale via pip:
+
+```bash
+pip install -r requirements.txt --extra-index-url https://pypi.nvidia.com
 ```
 
 ### 3. Preparar Dataset
@@ -125,7 +147,7 @@ molecular_subtype_dataset/
 
 > **Nota**: As imagens são automaticamente redimensionadas para 224×224 pixels durante o carregamento.
 
-## 🚀 Como Usar
+ ## 🚀 Como Usar
 
 ### Opção 1: Executar Pipeline Completo via CLI (Recomendado)
 
@@ -152,12 +174,18 @@ python run_full_pipeline.py --arch InceptionV3 --base_path ./dataset_customizado
 --base_path <caminho>
     Caminho base onde os dados estão organizados (padrão: sanity_test_dataset/)
     Deve conter: train/, val/, test/
+
+--epochs <número>
+    Número máximo de épocas para treinamento (padrão: 5)
+
+--base_lr <valor>
+    Taxa de aprendizado inicial (padrão: 0.0001)
 ```
 
 #### Exemplo completo:
 
 ```bash
-python run_full_pipeline.py --arch DenseNet201 --base_path ./gastric_cancer_dataset/
+  ./gastric_cancer_dataset/
 ```
 
 ### Opção 2: Executar Notebooks Interativos via Jupyter
@@ -229,22 +257,27 @@ O pipeline gera os seguintes outputs em `outputs/`:
 
 ```
 outputs/
-├── {architecture}_metrics.txt     # Métricas finais (acc, prec, recall, F1)
-├── {architecture}_confusion_matrix.png
-├── {architecture}_training_history.png
-└── {architecture}_roc_curve.png
+├── dataframes/
+│   └── {architecture}_test_predictions_{timestamp}.csv    # Predições do conjunto de teste
+├── metrics/
+│   └── {architecture}_test_metrics_{timestamp}.json       # Métricas finais (accuracy, precision, recall, f1_score, auc)
+├── models/
+│   └── {architecture}_model_{timestamp}.hdf5              # Modelo treinado salvo
+├── {architecture}_confusion_matrix_{timestamp}.png       # Matriz de confusão
+└── {architecture}_roc_curve_{timestamp}.png              # Curva ROC
 
 ```
 
-**Exemplo de saída**:
-```
-MobileNetV2_metrics.txt:
----
-Accuracy: 0.8523
-Precision: 0.8641
-Recall: 0.8412
-F1-Score: 0.8525
-AUC-ROC: 0.9154
+**Exemplo de saída JSON** (`MobileNetV2_test_metrics_2026-04-22_11-01-52.json`):
+```json
+{
+  "loss": 4.176743507385254,
+  "accuracy": 0.5,
+  "f1_score": 0.0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "auc": 0.550000011920929
+}
 ```
 
 
@@ -262,10 +295,11 @@ Em um dataset típico de câncer gástrico com bom balanceamento:
 
 | Métrica | Esperado |
 |---------|----------|
-| **Acurácia Teste** | 80-90% |
-| **Precision** | 78-89% |
-| **Recall** | 79-88% |
-| **F1-Score** | 79-89% |
+| **Acurácia** | 52-71% |
+| **Precision** | 54-74% |
+| **Recall** | 51-79% |
+| **F1-Score** | 57-73% |
+| **AUC** | 54-75%|
 
 *Os resultados variam conforme o dataset, número de classes e balanceamento.*
 
