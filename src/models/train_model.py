@@ -1,5 +1,6 @@
 import os
 from typing import List, Dict
+from datetime import datetime
 
 import tensorflow as tf
 from tensorflow import keras
@@ -190,5 +191,8 @@ def train_phase2(architecture_name: str, model: Model, basemodel, train_data, va
         callbacks=callbacks
     )
     
+    # save model in outputs/models with name architecture_name_model_epoch.h5
+    model.save(f'outputs/models/{architecture_name}_model_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.h5')
+
     logger.info("Fase 2 concluída")
     return history_fine
