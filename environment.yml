@@ -1,0 +1,15 @@
+name: molsub-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - tensorflow[and-cuda]==2.15.0.post1
+    - numpy==1.25.2
+    - pandas==2.0.3
+    - seaborn==0.12.2
+    - matplotlib==3.7.1
+    - opencv-python==4.8.0.76
+    - scikit-learn==1.2.2
