@@ -11,7 +11,7 @@ from tensorflow.keras.models import Model
 
 import logging
 
-# Configurar logging
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -19,15 +19,15 @@ def print_confusion_matrix(cm, class_names: List[str], figsize: Tuple = (10, 7),
                            fontsize: int = 11, output_path: str = None,
                            architecture_name: str = None):
     """
-    Cria e salva matriz de confusão visualizada.
+    Creates and saves confusion matrix visualization.
     
     Args:
-        cm (np.ndarray): Matriz de confusão
-        class_names (List[str]): Nomes das classes
-        figsize (Tuple): Tamanho da figura
-        fontsize (int): Tamanho da fonte
-        output_path (str): Caminho para salvar (default: with timestamp)
-        architecture_name (str): Nome da arquitetura (para nome do arquivo)
+        cm (np.ndarray): Confusion matrix
+        class_names (List[str]): Class names
+        figsize (Tuple): Figure size
+        fontsize (int): Font size
+        output_path (str): Path to save (default: with timestamp)
+        architecture_name (str): Architecture name (for filename)
     """
     if output_path is None:
         output_path = f'outputs/metrics/{architecture_name}_confusion_matrix_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.png'
@@ -51,37 +51,37 @@ def print_confusion_matrix(cm, class_names: List[str], figsize: Tuple = (10, 7),
     plt.savefig(output_path, bbox_inches='tight')
     plt.close()
     
-    logger.info(f"Matriz de confusão salva em: {output_path}")
+    logger.info(f"Confusion matrix saved to: {output_path}")
 
 
 def evaluate_model(model: Model, test_data, class_names: List[str], architecture_name: str = None) -> Dict:
     """
-    Avalia modelo no dataset de teste e gera métricas.
+    Evaluates model on test dataset and generates metrics.
     
     Args:
-        model (Model): Modelo treinado
-        test_data: Dataset de teste
-        class_names (List[str]): Nomes das classes
-        architecture_name (str): Nome da arquitetura
+        model (Model): Trained model
+        test_data: Test dataset
+        class_names (List[str]): Class names
+        architecture_name (str): Architecture name
 
     Returns:
-        Dict: Dicionário com métricas (loss, acc, f1, precision, recall, auc)
+        Dict: Dictionary with metrics (loss, acc, f1, precision, recall, auc)
     """
-    logger.info("=== Avaliação no Conjunto de Teste ===")
+    logger.info("=== Evaluation on Test Set ===")
     
     num_test = test_data.samples
     
-    # Predições
+    # Predictions
     Y_pred = model.predict(test_data, steps=num_test, verbose=1)
 
     test_preds = np.argmax(Y_pred, axis=-1)
     test_trues = test_data.classes
     
-    # Matriz de confusão
+    # Confusion matrix
     cm = confusion_matrix(test_trues, test_preds)
     print_confusion_matrix(cm, class_names, figsize=(5, 5), fontsize=11, architecture_name=architecture_name)
     
-    # Métricas
+    # Metrics
     loss, acc, f1_score, prec, rec, aroc = model.evaluate(test_data, verbose=1)
     
     metrics = {
@@ -97,7 +97,7 @@ def evaluate_model(model: Model, test_data, class_names: List[str], architecture
     test_trues_names = [class_names[i] for i in test_trues]
     test_preds_names = [class_names[i] for i in test_preds]
 
-    # cria um data frame com o endereço das imagens, as classes verdadeiras e preditas e probabilidades preditas
+    # creates a data frame with the address of images, true and predicted classes and predicted probabilities
     test_filenames = test_data.filenames
     test_df = pd.DataFrame({
         'filename': test_filenames,

@@ -23,25 +23,25 @@ Repositório contendo notebooks Jupyter e scripts Python para aplicações de de
 - [Licença](#📝-Licença)
 
 
-## 📋 Visão Geral do Projeto
+## 📋 Project Overview
 
-**Predição de Subtipos Moleculares de Câncer Gástrico**:
+**Gastric Cancer Molecular Subtype Prediction**:
 
-Explora a predição de subtipos moleculares de câncer gástrico utilizando várias CNNs em imagens histopatológicas. O objetivo principal é investigar se essas predições se mantêm quando a morfologia histológica é controlada. Os modelos são avaliados quanto à estabilidade e sensibilidade a variações de taxa de aprendizado (0.0001 e 0.001) usando o otimizador Adam com early stopping implementado em duas fases de fine tuning.
+Explores the prediction of gastric cancer molecular subtypes using multiple CNNs on histopathological images. The main objective is to investigate whether these predictions hold when histological morphology is controlled. Models are evaluated for stability and sensitivity to variations in learning rates (0.0001 and 0.001) using the Adam optimizer with early stopping implemented in two fine-tuning phases.
 
-### Características principais:
-- ✅ **6 Arquiteturas de modelos** pré-treinados (ImageNet)
-- ✅ **Pipeline automático** com treinamento em 2 fases
-- ✅ **Early stopping** com paciência configurável
-- ✅ **Fine tuning adaptativo** com descongelamento de camadas
-- ✅ **Jupyter Notebooks** para experimentação interativa
-- ✅ **CLI robusta** para execução de pipelines
+### Main Features:
+- ✅ **6 Pre-trained Model Architectures** (ImageNet)
+- ✅ **Automatic Pipeline** with 2-phase training
+- ✅ **Early Stopping** with configurable patience
+- ✅ **Adaptive Fine Tuning** with layer unfreezing
+- ✅ **Jupyter Notebooks** for interactive experimentation
+- ✅ **Robust CLI** for pipeline execution
 
-## 🧠 Arquiteturas Suportadas
+## 🧠 Supported Architectures
 
-O repositório implementa e avalia as seguintes arquiteturas pré-treinadas:
+The repository implements and evaluates the following pre-trained architectures:
 
-| Arquitetura | Notebook | Comando CLI |
+| Architecture | Notebook | CLI Command |
 |------------|----------|-------------|
 | MobileNetV2 | `notebooks/MobileNetV2.ipynb` | `--arch MobileNetV2` |
 | DenseNet201 | `notebooks/DenseNet201.ipynb` | `--arch DenseNet201` |
@@ -50,15 +50,15 @@ O repositório implementa e avalia as seguintes arquiteturas pré-treinadas:
 | VGG19 | `notebooks/VGG19.ipynb` | `--arch VGG19` |
 | NASNetMobile | `notebooks/NASNetMobile.ipynb` | `--arch NASNetMobile` |
 
-## 🛠️ Ambiente & Dependências
+## 🖨️ Environment & Dependencies
 
-### Requisitos do Sistema:
+### System Requirements:
 - **Python**: 3.10.12
-- **CUDA** (recomendado para GPU): 11.x ou 12.x
-- **RAM mínimo**: 8GB (16GB recomendado)
-- **VRAM GPU** (se disponível): 4GB+
+- **CUDA** (recommended for GPU): 11.x or 12.x
+- **Minimum RAM**: 8GB (16GB recommended)
+- **GPU VRAM** (if available): 4GB+
 
-### Dependências Python:
+### Python Dependencies:
 
 ```
 tensorflow[and-cuda]==2.15.0.post1
@@ -71,60 +71,60 @@ scikit-learn==1.2.2
 jupyter>=1.0.0
 ```
 
-## 📦 Instalação Rápida
+## 📦 Quick Installation
 
-### Opção 1: Usando Virtualenv (Python)
+### Option 1: Using Virtualenv (Python)
 
-#### 1. Preparar Ambiente Virtual
+#### 1. Prepare Virtual Environment
 
 ```bash
-# Clonar/navegar para o repositório
+# Clone/navigate to the repository
 cd molecular_subtype_notebooks
 
-# Criar virtualenv
+# Create virtualenv
 python3.10 -m venv venv
 
-# Ativar (Linux/Mac)
+# Activate (Linux/Mac)
 source venv/bin/activate
 
-# Ativar (Windows)
+# Activate (Windows)
 # venv\Scripts\activate
 ```
 
-#### 2. Instalar Dependências
+#### 2. Install Dependencies
 
 ```bash
 # Upgrade pip
 pip install --upgrade pip
 
-# Instalar requisitos
+# Install requirements
 pip install -r requirements.txt --extra-index-url https://pypi.nvidia.com
 
 ```
 
-### Opção 2: Usando Conda
+### Option 2: Using Conda
 
-#### 1. Criar Ambiente Conda
+#### 1. Create Conda Environment
 
 ```bash
-# Criar ambiente conda
+# Create conda environment
 conda env create -f environment.yml
 
-# Ativar ambiente
+# Activate environment
 conda activate molsub-env
 ```
 
-#### 2. Instalar Dependências (se necessário)
+#### 2. Install Dependencies (if necessary)
 
-Caso haja dependências que não foram instaladas via `environment.yml`, instale via pip:
+If there are dependencies that were not installed via `environment.yml`, install via pip:
 
 ```bash
 pip install -r requirements.txt --extra-index-url https://pypi.nvidia.com
 ```
 
-### 3. Preparar Dataset
+### 3. Prepare Dataset
 
-Estruture seus dados nos diretórios esperados:
+Structure your data in the expected directories:
 
 ```
 molecular_subtype_dataset/
@@ -145,7 +145,7 @@ molecular_subtype_dataset/
     └── ...
 ```
 
-> **Nota**: As imagens são automaticamente redimensionadas para 224×224 pixels durante o carregamento.
+> **Note**: Images are automatically resized to 224×224 pixels during loading.
 
  ## 🚀 Como Usar
 

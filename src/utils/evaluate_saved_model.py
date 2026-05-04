@@ -1,5 +1,5 @@
 """
-Utilitário para avaliar um modelo salvo em um dataset de teste.
+Utility to evaluate a saved model on a test dataset.
 """
 
 import os
@@ -13,41 +13,41 @@ from src.models.metrics import f1, precision, recall
 
 import logging
 
-# Configurar logging
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 def evaluate_saved_model(model_path: str, test_path: str, architecture_name: str = None):
     """
-    Carrega um modelo salvo e avalia no dataset de teste.
+    Loads a saved model and evaluates it on the test dataset.
 
     Args:
-        model_path (str): Caminho para o arquivo do modelo (.h5)
-        test_path (str): Caminho para o diretório de teste
-        architecture_name (str): Nome da arquitetura para logs
+        model_path (str): Path to the model file (.h5)
+        test_path (str): Path to the test directory
+        architecture_name (str): Architecture name for logs
     """
-    # Carregar modelo
+    # Load model
     if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Modelo não encontrado: {model_path}")
+        raise FileNotFoundError(f"Model not found: {model_path}")
     
     model = load_model(model_path, custom_objects={
         "f1": f1,
         "precision": precision,
         "recall": recall
     })
-    print(f"Modelo carregado de: {model_path}")
+    print(f"Model loaded from: {model_path}")
     
-    # Configurar dataset de teste
+    # Configure test dataset
     batch_size = 32
     
-    # Criar generator para teste
+    # Create generator for test
     test_datagen = ImageDataGenerator(rescale=None)
     test_data = load_dataset(test_datagen, test_path, batch_size)
 
     class_names = list(test_data.class_indices.keys())
-    logger.info(f"Classes detectadas: {class_names}")
+    logger.info(f"Classes detected: {class_names}")
     
-    # Avaliar modelo
+    # Evaluate model
     metrics = evaluate_model(model, test_data, class_names, architecture_name)
     
 

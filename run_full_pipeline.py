@@ -124,7 +124,7 @@ def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "
     return model, metrics
 
 
-def main(kwargs = None, architecture_name: str = "MobileNetV2"):
+def main(kwargs = None):
 
     parser = argparse.ArgumentParser(description='Treina e avalia MobileNetV2 para predição de subtipos moleculares de câncer gástrico.')
     parser.add_argument('--arch', type=str, default='MobileNetV2', help='Arquitetura a ser utilizada (MobileNetV2, ResNet50V2, VGG19, NASNetMobile, InceptionV3, DenseNet201)')
