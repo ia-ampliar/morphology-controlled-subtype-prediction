@@ -50,16 +50,18 @@ def get_class_info(val_data) -> Tuple[List[str], int]:
     return class_names, num_classes
 
 
-def save_metrics_to_file(metrics: Dict, output_path: str = None, architecture_name: str = None):
+def save_metrics_to_file(metrics: Dict, output_path: str = None, architecture_name: str = None, config: Dict = None):
     """
     Salva métricas em arquivo texto.
     
     Args:
         metrics (Dict): Dicionário com métricas
         output_path (str): Caminho de saída (default: with timestamp)
+        architecture_name (str): Nome da arquitetura
+        config (Dict): Configuração
     """
     if output_path is None:
-        output_path = f'outputs/metrics/{architecture_name}_test_metrics_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.json'
+        output_path = f'{config["output_dir"]}/metrics/{architecture_name}_{config["base_learning_rate"]}_test_metrics_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.json'
     
     os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
     

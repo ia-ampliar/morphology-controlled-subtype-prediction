@@ -39,13 +39,14 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 
 
-def load_config(base_path: str, epochs: int, base_learning_rate: float) -> Dict:
+def load_config(base_path: str, output_dir: str, epochs: int, base_learning_rate: float) -> Dict:
     """
     Carrega configurações do modelo e treinamento.
     
     Returns:
         dict: Dicionário com configurações
             - base_path: Caminho base para os datasets
+            - output_dir: Diretório para salvar modelos, métricas e visualizações
             - img_shape: Formato das imagens (224, 224, 3)
             - batch_size: Tamanho do batch
             - epochs: Número máximo de épocas
@@ -53,6 +54,7 @@ def load_config(base_path: str, epochs: int, base_learning_rate: float) -> Dict:
     """
     config = {
         'base_path': base_path,
+        'output_dir': f'{output_dir}/{base_learning_rate}/',
         'img_shape': (224, 224, 3),
         'batch_size': 32,
         'epochs': epochs,
@@ -70,7 +72,7 @@ def load_config(base_path: str, epochs: int, base_learning_rate: float) -> Dict:
 # PIPELINE COMPLETO
 # ============================================================================
 
-def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "sanity_test_dataset/", epochs: int = 5, base_learning_rate: float = 0.0001) -> Tuple[Model, Dict]:
+def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "sanity_test_dataset/", output_dir: str = "outputs/", epochs: int = 5, base_learning_rate: float = 0.0001) -> Tuple[Model, Dict]:
     """
     Executa pipeline completo: carregamento, construção, treinamento e avaliação.
     """
@@ -80,7 +82,7 @@ def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "
     
     # Setup
     print_environment_info()
-    config = load_config(base_path, epochs, base_learning_rate)
+    config = load_config(base_path, output_dir, epochs, base_learning_rate)
     
     # Dados
     train_dir, val_dir, test_dir = setup_data_directories(config)
@@ -114,8 +116,8 @@ def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "
     )
     
     # Avaliação
-    metrics = evaluate_model(model, test_data, class_names, architecture_name=architecture_name)
-    save_metrics_to_file(metrics, architecture_name=architecture_name)
+    metrics = evaluate_model(model, test_data, class_names, architecture_name=architecture_name, config=config)
+    save_metrics_to_file(metrics, architecture_name=architecture_name, config=config)
     
     logger.info("="*80)
     logger.info("PIPELINE CONCLUÍDO COM SUCESSO")
@@ -127,11 +129,13 @@ def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "
 def main(kwargs = None):
 
     parser = argparse.ArgumentParser(description='Treina e avalia MobileNetV2 para predição de subtipos moleculares de câncer gástrico.')
+    parser.add_argument('--all', action='store_true', default=False, help='Executa pipeline completo de todas as redes')
     parser.add_argument('--arch', type=str, default='MobileNetV2', help='Arquitetura a ser utilizada (MobileNetV2, ResNet50V2, VGG19, NASNetMobile, InceptionV3, DenseNet201)')
     parser.add_argument('--base_path', type=str, default='sanity_test_dataset/', help='Caminho base para os datasets (train, val, test)')
     
     parser.add_argument('--epochs', type=int, default=5, help='Número máximo de épocas para treinamento')
     parser.add_argument('--base_lr', type=float, default=0.0001, help='Taxa de aprendizado inicial')
+    parser.add_argument('--output_dir', type=str, default='outputs/', help='Diretório para salvar modelos, métricas e visualizações')
 
     # parser.add_argument('--batch_size', type=int, default=32, help='Tamanho do batch para treinamento')
     # parser.add_argument('--phase1_ratio', type=float, default=0.4, help='Proporção de épocas para fase 1 (fine tuning com base congelada)')
@@ -141,12 +145,25 @@ def main(kwargs = None):
     
     args = parser.parse_args(kwargs)
 
-    run_full_pipeline(
-        architecture_name=args.arch,
-        base_path=args.base_path,
-        epochs=args.epochs,
-        base_learning_rate=args.base_lr
-    )
+    if args.all:
+        architectures = ['MobileNetV2', 'ResNet50V2', 'VGG19', 'NASNetMobile', 'InceptionV3', 'DenseNet201']
+        for arch in architectures:
+            logger.info(f"Executando pipeline completo para {arch}")
+            run_full_pipeline(
+                architecture_name=arch,
+                output_dir=args.output_dir,
+                base_path=args.base_path,
+                epochs=args.epochs,
+                base_learning_rate=args.base_lr
+            )
+    else:
+        run_full_pipeline(
+            architecture_name=args.arch,
+            output_dir=args.output_dir,
+            base_path=args.base_path,
+            epochs=args.epochs,
+            base_learning_rate=args.base_lr
+        )
 
 if __name__ == "__main__":
     main()

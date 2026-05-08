@@ -131,7 +131,7 @@ def train_phase1(model: Model, basemodel: Model, train_data, val_data, config: D
     
     logger.info(f"Fase 1: Treinando por {initial_epochs} épocas")
     
-    callbacks = create_callbacks(f'callbacks/melhor_modelo_{architecture_name}_ft.hdf5')
+    callbacks = create_callbacks(f'callbacks/melhor_modelo_{architecture_name}_{config["base_learning_rate"]}_ft.hdf5')
     
     history = model.fit(
         train_data,
@@ -177,7 +177,7 @@ def train_phase2(architecture_name: str, model: Model, basemodel, train_data, va
     
     logger.info(f"Fase 2: Treinando com learning_rate={new_learning_rate}")
     
-    callbacks = create_callbacks(f'callbacks/melhor_modelo_{architecture_name}_ft.hdf5')
+    callbacks = create_callbacks(f'callbacks/melhor_modelo_{architecture_name}_{config["base_learning_rate"]}_ft.hdf5')
     
     # Continuar do époco anterior
     initial_epoch = history_phase1.epoch[-1]
@@ -192,7 +192,7 @@ def train_phase2(architecture_name: str, model: Model, basemodel, train_data, va
     )
     
     # save model in outputs/models with name architecture_name_model_epoch.h5
-    model.save(f'outputs/models/{architecture_name}_model_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.h5')
+    model.save(f'{config["output_dir"]}/models/{architecture_name}_{config["base_learning_rate"]}_model_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.h5')
 
     logger.info("Fase 2 concluída")
     return history_fine

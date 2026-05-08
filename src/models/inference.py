@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def print_confusion_matrix(cm, class_names: List[str], figsize: Tuple = (10, 7), 
                            fontsize: int = 11, output_path: str = None,
-                           architecture_name: str = None):
+                           architecture_name: str = None, config: Dict = None):
     """
     Creates and saves confusion matrix visualization.
     
@@ -30,7 +30,7 @@ def print_confusion_matrix(cm, class_names: List[str], figsize: Tuple = (10, 7),
         architecture_name (str): Architecture name (for filename)
     """
     if output_path is None:
-        output_path = f'outputs/metrics/{architecture_name}_confusion_matrix_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.png'
+        output_path = f'{config["output_dir"]}/metrics/{architecture_name}_{config["base_learning_rate"]}_confusion_matrix_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.png'
     
     os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
     
@@ -54,7 +54,7 @@ def print_confusion_matrix(cm, class_names: List[str], figsize: Tuple = (10, 7),
     logger.info(f"Confusion matrix saved to: {output_path}")
 
 
-def evaluate_model(model: Model, test_data, class_names: List[str], architecture_name: str = None) -> Dict:
+def evaluate_model(model: Model, test_data, class_names: List[str], architecture_name: str = None, config: Dict = None) -> Dict:
     """
     Evaluates model on test dataset and generates metrics.
     
@@ -63,6 +63,7 @@ def evaluate_model(model: Model, test_data, class_names: List[str], architecture
         test_data: Test dataset
         class_names (List[str]): Class names
         architecture_name (str): Architecture name
+        config (Dict): Configuration dictionary
 
     Returns:
         Dict: Dictionary with metrics (loss, acc, f1, precision, recall, auc)
@@ -79,7 +80,7 @@ def evaluate_model(model: Model, test_data, class_names: List[str], architecture
     
     # Confusion matrix
     cm = confusion_matrix(test_trues, test_preds)
-    print_confusion_matrix(cm, class_names, figsize=(5, 5), fontsize=11, architecture_name=architecture_name)
+    print_confusion_matrix(cm, class_names, figsize=(5, 5), fontsize=11, architecture_name=architecture_name, config=config)
     
     # Metrics
     loss, acc, f1_score, prec, rec, aroc = model.evaluate(test_data, verbose=1)
@@ -107,7 +108,7 @@ def evaluate_model(model: Model, test_data, class_names: List[str], architecture
     })
     
     # save test_df to csv
-    output_csv_path = f'outputs/dataframes/{architecture_name}_test_predictions_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
+    output_csv_path = f'{config["output_dir"]}/dataframes/{architecture_name}_{config["base_learning_rate"]}_test_predictions_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
     os.makedirs(os.path.dirname(output_csv_path) or '.', exist_ok=True)
     test_df.to_csv(output_csv_path, index=False)
     
