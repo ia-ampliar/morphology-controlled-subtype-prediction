@@ -1,0 +1,7 @@
+slide_id,category,differentiation,original_split
+TCGA-VQ-A94O-01Z-00-DX1,CIN,Moderately differentiated,train
+TCGA-HU-A4GN-01A-01-TS1,MSI,Moderately differentiated,train
+TCGA-D7-A6EY-01A-02-TS2,MSI,Moderately differentiated,train
+TCGA-BR-8382-01A-01-TS1,MSI,Moderately differentiated,train
+TCGA-BR-8369-01Z-00-DX1,CIN,Moderately differentiated,train
+TCGA-RD-A8N6-01A-01-TS1,CIN,Moderately differentiated,train

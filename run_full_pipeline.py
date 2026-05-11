@@ -24,7 +24,7 @@ from tensorflow.keras.models import Model
 import logging
 
 from src.models.dataset import setup_data_directories, load_all_datasets
-from src.utils.utils import get_class_info, save_metrics_to_file, print_environment_info
+from src.utils.utils import get_class_info, save_metrics_to_file, print_environment_info, set_random_seeds
 from src.models.build_model import build_model
 from src.models.train_model import train_phase1, train_phase2
 from src.models.inference import evaluate_model
@@ -127,6 +127,8 @@ def run_full_pipeline(architecture_name: str = "MobileNetV2", base_path: str = "
 
 
 def main(kwargs = None):
+    # Configurar sementes aleatórias para reprodutibilidade
+    set_random_seeds(seed=42)
 
     parser = argparse.ArgumentParser(description='Treina e avalia MobileNetV2 para predição de subtipos moleculares de câncer gástrico.')
     parser.add_argument('--all', action='store_true', default=False, help='Executa pipeline completo de todas as redes')

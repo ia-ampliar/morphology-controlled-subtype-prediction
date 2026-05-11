@@ -68,6 +68,10 @@ def evaluate_model(model: Model, test_data, class_names: List[str], architecture
     Returns:
         Dict: Dictionary with metrics (loss, acc, f1, precision, recall, auc)
     """
+    # Configurar seed para predições determinísticas
+    import tensorflow as tf
+    tf.keras.utils.set_random_seed(42)
+    
     logger.info("=== Evaluation on Test Set ===")
     
     num_test = test_data.samples

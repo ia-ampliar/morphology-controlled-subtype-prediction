@@ -5,9 +5,36 @@ import os
 from datetime import datetime
 import tensorflow as tf
 import platform
+import numpy as np
+import random
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+
+def set_random_seeds(seed: int = 42):
+    """
+    Define sementes aleatórias para garantir reprodutibilidade completa.
+    
+    Configura sementes para:
+    - NumPy (operações matemáticas)
+    - TensorFlow/Keras (inicialização de pesos, dropout, shuffling)
+    - Python random (outras operações aleatórias)
+    
+    NOTA: tf.config.experimental.enable_op_determinism() foi removido pois não é 
+    suportado com BatchNormalization em GPU. As sementes abaixo já garantem 
+    reprodutibilidade em CPU e maior consistência em GPU.
+    
+    Args:
+        seed (int): Valor da semente (padrão: 42)
+    """
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
+    random.seed(seed)
+    tf.keras.utils.set_random_seed(seed)
+    
+    logger.info(f"Sementes aleatórias configuradas com seed={seed}")
+
 
 def setup_gpu():
     """

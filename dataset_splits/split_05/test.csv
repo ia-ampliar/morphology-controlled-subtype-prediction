@@ -1,0 +1,9 @@
+slide_id,category,differentiation,original_split
+TCGA-BR-A4IY-01A-01-TSA,CIN,Poorly differentiated,test
+TCGA-VQ-A94R-01A-01-TSA,CIN,Moderately differentiated,test
+TCGA-CD-A4MH-01Z-00-DX1,CIN,Moderately differentiated,test
+TCGA-BR-8369-01A-01-BS1,CIN,Poorly differentiated,test
+TCGA-VQ-AA6D-01A-01-TS1,MSI,Moderately differentiated,test
+TCGA-HU-A4GQ-01A-01-TSA,MSI,Poorly differentiated,test
+TCGA-D7-A6EY-01Z-00-DX1,MSI,Well-differentiated,test
+TCGA-MX-A5UJ-01A-01-TS1,MSI,Moderately differentiated,test

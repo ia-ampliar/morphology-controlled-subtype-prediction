@@ -1,0 +1,25 @@
+slide_id,category,differentiation,original_split
+TCGA-EQ-8122-01A-01-BS1,CIN,Moderately differentiated,train
+TCGA-HU-A4GC-01A-01-TS1,CIN,Moderately differentiated,train
+TCGA-RD-A8N6-01A-01-TS1,CIN,Moderately differentiated,train
+TCGA-BR-8591-01A-01-BS1,MSI,Moderately differentiated,train
+TCGA-VQ-A924-01A-01-TS1,MSI,Poorly differentiated,train
+TCGA-D7-A6EY-01Z-00-DX1,MSI,Moderately differentiated,val
+TCGA-BR-8487-01Z-00-DX1,MSI,Well-differentiated,train
+TCGA-BR-8369-01Z-00-DX1,CIN,Moderately differentiated,train
+TCGA-BR-A4IY-01Z-00-DX1,CIN,Moderately differentiated,val
+TCGA-HU-A4GN-01A-01-TS1,MSI,Moderately differentiated,train
+TCGA-VQ-A924-01Z-00-DX1,MSI,Moderately differentiated,train
+TCGA-BR-8382-01Z-00-DX1,MSI,Moderately differentiated,train
+TCGA-VQ-A94O-01A-01-TS1,CIN,Moderately differentiated,val
+TCGA-BR-8286-01A-01-TS1,CIN,Moderately differentiated,train
+TCGA-VQ-A94O-01Z-00-DX1,CIN,Moderately differentiated,train
+TCGA-HU-A4H8-01A-01-TS1,MSI,Moderately differentiated,val
+TCGA-BR-8382-01A-01-BS1,MSI,Moderately differentiated,train
+TCGA-VQ-A94R-01Z-00-DX1,CIN,Moderately differentiated,train
+TCGA-BR-8369-01A-01-TS1,CIN,Poorly differentiated,train
+TCGA-RD-A8N6-01Z-00-DX1,CIN,Moderately differentiated,val
+TCGA-BR-8382-01A-01-TS1,MSI,Moderately differentiated,train
+TCGA-D7-A4YV-01Z-00-DX1,MSI,Moderately differentiated,val
+TCGA-EQ-A4SO-01A-01-TS1,CIN,Moderately differentiated,train
+TCGA-D7-A6EY-01A-02-TS2,MSI,Moderately differentiated,train

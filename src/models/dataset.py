@@ -31,7 +31,7 @@ def setup_data_directories(config: Dict) -> Tuple[str, str, str]:
 
 
 def load_dataset(datagen: ImageDataGenerator, directory: str, 
-                 batch_size: int = 32) -> tf.keras.preprocessing.image.DirectoryIterator:
+                 batch_size: int = 32, seed: int = 42) -> tf.keras.preprocessing.image.DirectoryIterator:
     """
     Carrega dataset de um diretório usando ImageDataGenerator.
     
@@ -39,6 +39,7 @@ def load_dataset(datagen: ImageDataGenerator, directory: str,
         datagen (ImageDataGenerator): Gerador configurado
         directory (str): Caminho do diretório
         batch_size (int): Tamanho do batch
+        seed (int): Semente para embaralhamento reprodutível
         
     Returns:
         DirectoryIterator: Iterator com dados carregados
@@ -47,12 +48,14 @@ def load_dataset(datagen: ImageDataGenerator, directory: str,
         directory,
         batch_size=batch_size,
         target_size=(224, 224),
-        class_mode="categorical"
+        class_mode="categorical",
+        shuffle=True,
+        seed=seed
     )
 
 
 def load_all_datasets(train_dir: str, val_dir: str, test_dir: str, 
-                      batch_size: int = 32) -> Tuple:
+                      batch_size: int = 32, seed: int = 42) -> Tuple:
     """
     Carrega todos os datasets (train, val, test).
     
@@ -61,6 +64,7 @@ def load_all_datasets(train_dir: str, val_dir: str, test_dir: str,
         val_dir (str): Caminho do dataset de validação
         test_dir (str): Caminho do dataset de teste
         batch_size (int): Tamanho do batch
+        seed (int): Semente para embaralhamento reprodutível
         
     Returns:
         Tuple: (train_data, val_data, test_data)
@@ -70,9 +74,9 @@ def load_all_datasets(train_dir: str, val_dir: str, test_dir: str,
     valid_datagen = ImageDataGenerator(rescale=None)
     test_datagen = ImageDataGenerator(rescale=None)
     
-    train_data = load_dataset(train_datagen, train_dir, batch_size)
-    val_data = load_dataset(valid_datagen, val_dir, batch_size)
-    test_data = load_dataset(test_datagen, test_dir, batch_size)
+    train_data = load_dataset(train_datagen, train_dir, batch_size, seed)
+    val_data = load_dataset(valid_datagen, val_dir, batch_size, seed)
+    test_data = load_dataset(test_datagen, test_dir, batch_size, seed)
     
     logger.info(f"[INFO] - Datasets carregados: train={len(train_data)}, val={len(val_data)}, test={len(test_data)}")
     

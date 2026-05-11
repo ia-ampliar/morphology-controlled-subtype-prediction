@@ -120,6 +120,9 @@ def build_model(img_shape: Tuple, num_classes: int, architecture_name: str = "Mo
     Returns:
         Model: Modelo Keras compilado
     """
+    # Configurar seed para inicialização de pesos determinística
+    tf.keras.utils.set_random_seed(42)
+    
     # Input
     inputs = Input(shape=img_shape)
     
@@ -127,7 +130,7 @@ def build_model(img_shape: Tuple, num_classes: int, architecture_name: str = "Mo
     xi = tf.cast(inputs, tf.float32)
     xi = get_preprocessing_function(architecture_name)(xi)
 
-    # Base model (MobileNetV2 pré-treinado)
+    # Base model (pré-treinado)
     basemodel = get_base_model(architecture_name, img_shape, xi)
     
     # Camadas densas

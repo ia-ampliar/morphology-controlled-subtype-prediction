@@ -8,9 +8,8 @@ Repositório contendo notebooks Jupyter e scripts Python para aplicações de de
 - [Ambiente & Dependências](#🛠️-Ambiente-&-Dependências)
 - [Instalação Rápida](#📦-Instalação-Rápida)
 - [Como Usar](#🚀-Como-Usar)
-- [Estrutura do Projeto](#📁-Estrutura-do-Projeto)
-- [Configuração do Pipeline](#⚙️-Configuração-do-Pipeline)
 - [Saídas & Resultados](#📊-Saídas-&-Resultados)
+- [Reprodutibilidade & Sementes Aleatórias](#🔐-Reprodutibilidade--Sementes-Aleatórias)
 - [Fluxo de Treinamento](#🔄-Fluxo-de-Treinamento)
 - [Material Suplementar](#📚-Material-Suplementar)
     - [Troubleshooting](#🐛-Troubleshooting)
@@ -36,6 +35,7 @@ Explores the prediction of gastric cancer molecular subtypes using multiple CNNs
 - ✅ **Adaptive Fine Tuning** with layer unfreezing
 - ✅ **Jupyter Notebooks** for interactive experimentation
 - ✅ **Robust CLI** for pipeline execution
+- ✅ **Reproducible Results** with fixed random seeds
 
 ## 🧠 Supported Architectures
 
@@ -78,9 +78,6 @@ jupyter>=1.0.0
 #### 1. Prepare Virtual Environment
 
 ```bash
-# Clone/navigate to the repository
-cd molecular_subtype_notebooks
-
 # Create virtualenv
 python3.10 -m venv venv
 
@@ -88,7 +85,7 @@ python3.10 -m venv venv
 source venv/bin/activate
 
 # Activate (Windows)
-# venv\Scripts\activate
+venv\Scripts\activate
 ```
 
 #### 2. Install Dependencies
@@ -161,8 +158,14 @@ python run_full_pipeline.py --arch DenseNet201
 # Com caminho customizado para dados
 python run_full_pipeline.py --arch ResNet50V2 --base_path ./meus_dados/
 
-# Combinado
-python run_full_pipeline.py --arch InceptionV3 --base_path ./dataset_customizado/
+# Rodar pipeline em todas as arquiteturas (DenseNet201, InceptionV3, MobileNetV2, NASNetMobile, ResNet50V2, VGG19)
+python run_full_pipeline.py --all
+
+# Combinado com diretório de saída customizado
+python run_full_pipeline.py --arch InceptionV3 --base_path ./dataset_customizado/ --output_dir ./resultados/
+
+# Treinar todas as arquiteturas com taxa de aprendizado diferente
+python run_full_pipeline.py --all --base_lr 0.001 --output_dir ./outputs_lr001/
 ```
 
 #### Parâmetros disponíveis:
@@ -170,6 +173,11 @@ python run_full_pipeline.py --arch InceptionV3 --base_path ./dataset_customizado
 ```
 --arch {MobileNetV2, ResNet50V2, VGG19, NASNetMobile, InceptionV3, DenseNet201}
     Arquitetura do modelo a ser treinado (padrão: MobileNetV2)
+    Ignorado quando --all é utilizado
+
+--all
+    Executa o pipeline completo para todas as 6 arquiteturas
+    Usa os mesmos parâmetros (base_path, epochs, base_lr, output_dir) para cada uma
 
 --base_path <caminho>
     Caminho base onde os dados estão organizados (padrão: sanity_test_dataset/)
@@ -180,12 +188,10 @@ python run_full_pipeline.py --arch InceptionV3 --base_path ./dataset_customizado
 
 --base_lr <valor>
     Taxa de aprendizado inicial (padrão: 0.0001)
-```
 
-#### Exemplo completo:
-
-```bash
-  ./gastric_cancer_dataset/
+--output_dir <caminho>
+    Diretório para salvar modelos, métricas e visualizações (padrão: outputs/)
+    Os arquivos serão organizados em subpastas de acordo com a taxa de aprendizado (ex: outputs/0.0001/)
 ```
 
 ### Opção 2: Executar Notebooks Interativos via Jupyter
@@ -253,22 +259,36 @@ metrics = evaluate_model(model, test_data, class_names, architecture_name='Mobil
 
 ## 📊 Saídas & Resultados
 
-O pipeline gera os seguintes outputs em `outputs/`:
+O pipeline gera outputs organizados por taxa de aprendizado em `outputs/{learning_rate}/`:
 
 ```
 outputs/
-├── dataframes/
-│   └── {architecture}_test_predictions_{timestamp}.csv    # Predições do conjunto de teste
-├── metrics/
-│   └── {architecture}_test_metrics_{timestamp}.json       # Métricas finais (accuracy, precision, recall, f1_score, auc)
-├── models/
-│   └── {architecture}_model_{timestamp}.hdf5              # Modelo treinado salvo
-├── {architecture}_confusion_matrix_{timestamp}.png       # Matriz de confusão
-└── {architecture}_roc_curve_{timestamp}.png              # Curva ROC
-
+├── 0.0001/                                               # Subpasta por taxa de aprendizado
+│   ├── dataframes/
+│   │   ├── MobileNetV2_0.0001_test_predictions_{timestamp}.csv
+│   │   ├── DenseNet201_0.0001_test_predictions_{timestamp}.csv
+│   │   └── ...
+│   ├── metrics/
+│   │   ├── MobileNetV2_0.0001_test_metrics_{timestamp}.json
+│   │   ├── DenseNet201_0.0001_test_metrics_{timestamp}.json
+│   │   └── ...
+│   └── models/
+│       ├── MobileNetV2_0.0001_model_{timestamp}.h5
+│       ├── DenseNet201_0.0001_model_{timestamp}.h5
+│       └── ...
+├── 0.001/                                                # Outra taxa de aprendizado
+│   ├── dataframes/
+│   ├── metrics/
+│   └── models/
+└── ...
 ```
 
-**Exemplo de saída JSON** (`MobileNetV2_test_metrics_2026-04-22_11-01-52.json`):
+**Estrutura de nomes dos arquivos**:
+- Formato: `{architecture}_{learning_rate}_{type}_{timestamp}.{ext}`
+- Exemplo: `MobileNetV2_0.0001_test_predictions_2026-05-08_08-27-24.csv`
+- Inclui a taxa de aprendizado no nome para fácil identificação
+
+**Exemplo de saída JSON** (`MobileNetV2_0.0001_test_metrics_2026-05-08_08-27-24.json`):
 ```json
 {
   "loss": 4.176743507385254,
@@ -282,7 +302,51 @@ outputs/
 
 
 
-## 📚 Material Suplementar
+## � Reprodutibilidade & Sementes Aleatórias
+
+### Garantindo Resultados Reproduzíveis
+
+O pipeline está configurado com **sementes aleatórias** para garantir que você obtenha os mesmos resultados em execuções subsequentes.
+
+### Como Funciona
+
+As sementes são automaticamente configuradas no **início de cada execução** através da função `set_random_seeds(seed=42)` que define:
+
+```python
+# Sementes configuradas automaticamente:
+- NumPy random seed (operações matemáticas)
+- TensorFlow random seed (inicialização de pesos)
+- Python random seed (outras operações aleatórias)
+- Keras/tf.keras seed (dropout, shuffling de batches)
+```
+
+### Customizar Seed
+
+Para alterar a seed (não recomendado para reprodutibilidade padrão):
+
+```python
+# Editar em src/utils/utils.py
+def set_random_seeds(seed: int = 42):  # Mudar 42 para outro valor
+    # ...
+```
+
+### Verificar Reprodutibilidade
+
+Execute o mesmo comando duas vezes e compare os resultados:
+
+```bash
+# Primeira execução
+python run_full_pipeline.py --arch MobileNetV2 --epochs 10
+ls outputs/0.0001/metrics/MobileNetV2_*.json
+
+# Segunda execução
+python run_full_pipeline.py --arch MobileNetV2 --epochs 10
+ls outputs/0.0001/metrics/MobileNetV2_*.json
+
+# Os arquivos JSON devem ter métricas idênticas ou muito aproximadas
+```
+
+## �📚 Material Suplementar
 
 - ### 🐛 Troubleshooting
 - ### 📊 Módulos Principais 
