@@ -74,13 +74,13 @@ def tubular_dataset_split_create(n_split: int = 0, data_dict: dict = None) -> No
 
 if __name__ == "__main__":
     
-    for n_split in range(10):
+    for n_split in range(5,10):
         logger.info("="*80)
         logger.info(f"INICIANDO PIPELINE DE TREINAMENTOS - split_0{n_split}")
         logger.info("="*80)
         path = f"dataset_splits/split_0{n_split}"
         splits = load_dataset_splits(path)
-        print(f"Found {len(splits)} splits:")
+        # print(f"Found {len(splits)} splits:")
         tubular_dataset_split_create(n_split, splits)
 
         # runs all networks for split datasets created with parameters:
@@ -89,8 +89,7 @@ if __name__ == "__main__":
         # --base_learning_rate 0.0001
         # --output_dir outputs/split_0{n_split}
         # --base_path tubular-subtype-molecular-dataset_split_0{n_split}/
-        if n_split > 4:
-            os.system(f"python run_full_pipeline.py --all --epochs 100 --base_lr 0.0001 --output_dir outputs/split_0{n_split} --base_path tubular-subtype-molecular-dataset_split_0{n_split}/")
+        os.system(f"python run_full_pipeline.py --all --epochs 100 --base_lr 0.0001 --output_dir outputs/split_0{n_split} --base_path tubular-subtype-molecular-dataset_split_0{n_split}/")
         
         os.system(f"python run_full_pipeline.py --all --epochs 100 --base_lr 0.001 --output_dir outputs/split_0{n_split} --base_path tubular-subtype-molecular-dataset_split_0{n_split}/")
 
